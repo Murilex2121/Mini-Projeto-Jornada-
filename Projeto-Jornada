@@ -1,0 +1,855 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Jornada do Cliente - Estratégias da Loja</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+body {
+font-family: 'Montserrat', sans-serif;
+margin: 0;
+background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+color: #222;
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: flex-start;
+}
+header {
+width: 100%;
+padding: 15px 20px;
+background-color: #0077b6;
+color: white;
+font-weight: 700;
+font-size: 1.5rem;
+text-align: center;
+box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 20px;
+}
+
+.header-logo {
+height: 60px;
+width: auto;
+}
+
+.emily-logo {
+font-family: 'Montserrat', sans-serif;
+font-weight: 700;
+font-size: 2.2rem;
+color: white;
+text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+letter-spacing: 1px;
+background: linear-gradient(45deg, #ffffff, #e3f2fd);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+position: relative;
+}
+
+.emily-logo::after {
+content: '';
+position: absolute;
+bottom: -3px;
+left: 0;
+width: 100%;
+height: 2px;
+background: linear-gradient(90deg, transparent, #ffffff, transparent);
+}
+
+main {
+max-width: 700px;
+background: white;
+margin: 20px;
+padding: 20px 25px 40px 25px;
+border-radius: 15px;
+box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+min-height: 450px;
+position: relative;
+overflow: hidden;
+}
+
+#scene-img-lojista,
+#scene-img-cliente {
+width: 100%;
+max-height: 250px;
+object-fit: cover;
+border-radius: 12px;
+margin-bottom: 15px;
+}
+
+#text-lojista,
+#text-cliente {
+font-size: 1.15rem;
+line-height: 1.5;
+margin-bottom: 20px;
+min-height: 80px;
+}
+
+#choices-lojista,
+#choices-cliente {
+display: flex;
+flex-direction: column;
+gap: 15px;
+}
+
+button.choice-btn {
+background-color: #48cae4;
+border: none;
+padding: 14px 20px;
+border-radius: 12px;
+font-size: 1.05rem;
+font-weight: 600;
+color: white;
+cursor: pointer;
+display: flex;
+align-items: center;
+gap: 10px;
+transition: all 0.4s ease;
+box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+position: relative;
+overflow: hidden;
+}
+
+button.choice-btn::before {
+content: '';
+position: absolute;
+top: 0;
+left: -100%;
+width: 100%;
+height: 100%;
+background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+transition: left 0.6s ease;
+}
+
+button.choice-btn:hover::before {
+left: 100%;
+}
+button.choice-btn:hover:not(:disabled) {
+background-color: #0096c7;
+}
+button.choice-btn:disabled {
+cursor: default;
+opacity: 0.6;
+}
+button.choice-btn.correct {
+background-color: #38b000 !important;
+box-shadow: 0 0 15px #38b000;
+transform: scale(1.02);
+}
+button.choice-btn.incorrect {
+background-color: #d00000 !important;
+box-shadow: 0 0 15px #d00000;
+transform: scale(0.98);
+}
+
+@keyframes pulse {
+0% { transform: scale(1); }
+50% { transform: scale(1.05); }
+100% { transform: scale(1); }
+}
+
+.pulse-animation {
+animation: pulse 0.6s ease-in-out;
+}
+
+.fade-in {
+opacity: 0;
+animation: fadeIn 0.5s ease-in forwards;
+}
+
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(20px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.scene-transition {
+opacity: 0;
+transform: translateX(30px);
+animation: slideIn 0.6s ease-out forwards;
+}
+
+@keyframes slideIn {
+from { opacity: 0; transform: translateX(30px); }
+to { opacity: 1; transform: translateX(0); }
+}
+
+#scoreboard-lojista,
+#scoreboard-cliente {
+margin-top: 20px;
+font-weight: 700;
+font-size: 1.25rem;
+color: #0077b6;
+padding: 15px;
+background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+border-radius: 10px;
+border-left: 4px solid #0077b6;
+box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.score-details {
+display: grid;
+grid-template-columns: 1fr 1fr 1fr;
+gap: 10px;
+margin-top: 10px;
+font-size: 0.9rem;
+}
+
+.score-item {
+text-align: center;
+padding: 8px;
+background: white;
+border-radius: 6px;
+box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.score-item .label {
+display: block;
+font-size: 0.8rem;
+color: #666;
+margin-bottom: 4px;
+}
+
+.score-item .value {
+display: block;
+font-weight: bold;
+color: #0077b6;
+}
+
+#character-select {
+display: flex;
+gap: 25px;
+justify-content: center;
+margin-bottom: 25px;
+}
+.char-option {
+cursor: pointer;
+border: 3px solid transparent;
+border-radius: 15px;
+padding: 10px;
+transition: border-color 0.3s ease, box-shadow 0.3s ease;
+text-align: center;
+width: 150px;
+user-select: none;
+}
+.char-option:hover,
+.char-option:focus-visible {
+border-color: #0077b6;
+outline: none;
+box-shadow: 0 0 10px #0077b6;
+}
+.char-option.selected {
+border-color: #023e8a;
+box-shadow: 0 0 12px #023e8a;
+}
+.char-img {
+width: 100%;
+border-radius: 15px;
+height: 180px;
+object-fit: cover;
+user-select: none;
+}
+
+#role-select {
+display: flex;
+gap: 40px;
+justify-content: center;
+margin: 30px 0 40px 0;
+}
+.role-option {
+cursor: pointer;
+border: 3px solid transparent;
+border-radius: 15px;
+padding: 15px 25px;
+font-weight: 700;
+font-size: 1.3rem;
+color: white;
+background: #0077b6;
+user-select: none;
+transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.role-option:hover,
+.role-option:focus-visible {
+background-color: #023e8a;
+outline: none;
+box-shadow: 0 0 15px #023e8a;
+}
+.role-option.selected {
+background-color: #023e8a;
+border-color: #010f23;
+box-shadow: 0 0 20px #010f23;
+}
+
+#mute-btn {
+position: fixed;
+top: 15px;
+right: 15px;
+background: #0077b6;
+border: none;
+color: white;
+padding: 8px 12px;
+border-radius: 12px;
+cursor: pointer;
+font-weight: 600;
+box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+z-index: 1000;
+}
+
+button.choice-btn:focus-visible {
+outline: 3px solid #023e8a;
+outline-offset: 2px;
+}
+
+.qr-section {
+margin-top: 40px;
+padding: 30px 20px;
+background: white;
+border-radius: 15px;
+box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+text-align: center;
+max-width: 700px;
+cursor: pointer;
+transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.qr-section:hover {
+transform: translateY(-2px);
+box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+}
+
+.qr-section h3 {
+color: #0077b6;
+font-weight: 700;
+margin-bottom: 20px;
+font-size: 1.3rem;
+}
+
+.qr-section img {
+max-width: 200px;
+height: auto;
+border-radius: 10px;
+box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+transition: transform 0.3s ease;
+}
+
+.qr-section img:hover {
+transform: scale(1.05);
+}
+
+.qr-text {
+margin-top: 15px;
+color: #555;
+font-size: 1rem;
+line-height: 1.5;
+}
+
+@media (max-width: 480px) {
+main {
+margin: 10px;
+padding: 15px 15px 30px 15px;
+}
+button.choice-btn {
+font-size: 0.95rem;
+padding: 12px 18px;
+}
+#character-select {
+flex-direction: column;
+gap: 15px;
+}
+#role-select {
+flex-direction: column;
+gap: 20px;
+}
+header {
+flex-direction: column;
+gap: 10px;
+padding: 10px 15px;
+}
+.emily-logo {
+font-size: 1.8rem;
+}
+.qr-section {
+margin: 20px 10px;
+padding: 20px 15px;
+}
+}
+</style>
+</head>
+<body>
+<header>
+<div class="emily-logo">Emily Talieri</div>
+<span>Jornada do Cliente - Estratégias da Loja</span>
+</header>
+<button id="mute-btn" aria-pressed="false" aria-label="Ativar ou desativar som">🔊 Som</button>
+<main>
+<section id="role-selection" aria-label="Seleção do papel no jogo">
+<p><strong>Escolha seu papel no jogo:</strong></p>
+<div id="role-select">
+<button class="role-option" id="choose-lojista" aria-label="Escolher visão do lojista">Sou Lojista</button>
+<button class="role-option" id="choose-cliente" aria-label="Escolher visão do cliente">Sou Cliente</button>
+</div>
+</section>
+<section id="character-selection" aria-label="Seleção de personagem" style="display:none;">
+<p><strong>Escolha seu personagem:</strong></p>
+<div id="character-select" role="radiogroup" aria-label="Seleção de personagem">
+<div class="char-option" tabindex="0" role="radio" aria-checked="false" data-character="menino" aria-label="Menino personagem">
+<img src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Menino personagem" class="char-img" />
+<p>Menino</p>
+</div>
+<div class="char-option" tabindex="0" role="radio" aria-checked="false" data-character="menina" aria-label="Menina personagem">
+<img src="https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Menina personagem" class="char-img" />
+<p>Menina</p>
+</div>
+</div>
+</section>
+<section id="game-lojista" style="display:none;">
+<img id="scene-img-lojista" src="" alt="" />
+<div id="text-lojista" aria-live="polite"></div>
+<div id="choices-lojista" role="list"></div>
+<div id="scoreboard-lojista" aria-live="polite"></div>
+<div id="progress-lojista" style="font-size: 0.9em; margin-top: 10px; text-align: right; color: #555;"></div>
+</section>
+<section id="game-cliente" style="display:none;">
+<img id="scene-img-cliente" src="" alt="" />
+<div id="text-cliente" aria-live="polite"></div>
+<div id="choices-cliente" role="list"></div>
+<div id="scoreboard-cliente" aria-live="polite"></div>
+<div id="progress-cliente" style="font-size: 0.9em; margin-top: 10px; text-align: right; color: #555;"></div>
+</section>
+</main>
+
+<div class="qr-section" onclick="window.open('https://instagram.com/exclusivabyemilytalieri', '_blank')">
+<h3>Conecte-se conosco!</h3>
+<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://instagram.com/exclusivabyemilytalieri" alt="QR Code para Instagram Emily Talieri" />
+<p class="qr-text">Escaneie o QR Code ou clique aqui para acessar nosso Instagram e ficar por dentro das nossas novidades!</p>
+</div>
+
+<script>
+// Elementos principais
+const roleSelection = document.getElementById('role-selection');
+const characterSelection = document.getElementById('character-selection');
+const gameLojista = document.getElementById('game-lojista');
+const gameCliente = document.getElementById('game-cliente');
+
+const roleLojistaBtn = document.getElementById('choose-lojista');
+const roleClienteBtn = document.getElementById('choose-cliente');
+
+const characterOptions = Array.from(document.querySelectorAll('.char-option'));
+
+const sceneImgLojista = document.getElementById('scene-img-lojista');
+const textLojista = document.getElementById('text-lojista');
+const choicesLojista = document.getElementById('choices-lojista');
+const scoreboardLojista = document.getElementById('scoreboard-lojista');
+const progressLojista = document.getElementById('progress-lojista');
+
+const sceneImgCliente = document.getElementById('scene-img-cliente');
+const textCliente = document.getElementById('text-cliente');
+const choicesCliente = document.getElementById('choices-cliente');
+const scoreboardCliente = document.getElementById('scoreboard-cliente');
+const progressCliente = document.getElementById('progress-cliente');
+
+const muteBtn = document.getElementById('mute-btn');
+
+// Estado do jogo
+let role = null; // 'lojista' ou 'cliente'
+let currentSceneIndex = 0;
+let score = 0;
+let selectedCharacter = null;
+let isMuted = false;
+let correctAnswers = 0;
+let totalQuestions = 0;
+let startTime = null;
+
+// Sons simples via Web Audio API (alternativa a áudio externo)
+function playSound(correct) {
+if(isMuted) return;
+try {
+const ctx = new (window.AudioContext || window.webkitAudioContext)();
+const o = ctx.createOscillator();
+const g = ctx.createGain();
+o.connect(g);
+g.connect(ctx.destination);
+if(correct) {
+o.frequency.value = 600;
+} else {
+o.frequency.value = 300;
+}
+o.type = 'square';
+o.start();
+g.gain.setValueAtTime(0.1, ctx.currentTime);
+g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+o.stop(ctx.currentTime + 0.15);
+} catch(e) {
+// Caso Web Audio API não funcione, ignora som
+}
+}
+
+// Dados das cenas para lojista
+const scenesLojista = [
+{
+id: 1,
+img: 'https://images.pexels.com/photos/267350/pexels-photo-267350.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', // Social media marketing strategy
+text: 'Estratégia de Divulgação: A loja precisa divulgar sua nova coleção de vestidos para atrair novos clientes como Júlia (Persona da Jornada do Cliente). Qual a estratégia mais eficaz para alcançar o público-alvo?',
+choices: [
+{ text: 'Investir em anúncios segmentados no Instagram, focando em interesses e demografia do público-alvo.', correct: true, feedback: '**Correto!** Anúncios segmentados no Instagram são altamente eficazes. Eles permitem que você alcance diretamente o público que tem maior probabilidade de se interessar pela sua coleção, otimizando o investimento e aumentando as chances de engajamento e vendas.' },
+{ text: 'Fazer vídeos de tendências no TikTok e esperar que eles viralizem organicamente.', correct: false, feedback: '**Incorreto.** Embora o TikTok seja relevante, depender apenas da viralização é uma estratégia arriscada e pouco controlável. O alcance orgânico é imprevisível e não garante que sua mensagem chegue ao público certo ou que se converta em vendas.' },
+{ text: 'Fazer parcerias com microinfluenciadoras que estejam alinhadas com o perfil da marca e do público-alvo.', correct: true, feedback: '**Correto!** Parcerias com microinfluenciadoras são muito eficazes. Elas têm engajamento alto, audiência mais segmentada e geram mais confiança. O público tende a confiar mais nas recomendações delas, gerando conversões mais autênticas.' },
+{ text: 'Criar um blog no site da loja e esperar que o SEO traga tráfego orgânico.', correct: false, feedback: '**Incorreto.** Embora SEO seja importante a longo prazo, criar um blog e aguardar resultados orgânicos é muito lento para o lançamento de uma nova coleção. Você precisa de estratégias mais imediatas para gerar buzz e vendas rapidamente.' }
+]
+},
+{
+id: 2,
+img: 'https://images.pexels.com/photos/7688336/pexels-photo-7688336.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', // Atendimento ao cliente/primeira impressão
+text: 'Primeira Impressão: Júlia entra na loja pela primeira vez. Ela está um pouco tímida e olhando ao redor. Como você deve abordá-la para criar uma primeira impressão positiva e não afugentá-la?',
+choices: [
+{ text: 'Cumprimentar com um sorriso caloroso e perguntar imediatamente o que ela está procurando.', correct: false, feedback: '**Incorreto.** Abordar imediatamente pode pressionar clientes mais tímidos. É melhor dar um tempo para ela se ambientar e demonstrar disponibilidade sem ser invasivo.' },
+{ text: 'Dar um cumprimento caloroso, se apresentar e dizer que está disponível caso ela precise de alguma coisa.', correct: true, feedback: '**Correto!** Esta abordagem é ideal. Você demonstra cordialidade, se apresenta (criando conexão pessoal) e oferece ajuda sem pressionar. Isso deixa a cliente confortável para explorar no seu ritmo.' },
+{ text: 'Deixá-la à vontade inicialmente e observar seu comportamento antes de se aproximar.', correct: true, feedback: '**Correto!** Observar o comportamento inicial da cliente é uma estratégia inteligente. Isso permite que você adapte sua abordagem ao perfil dela e ao que ela demonstra estar procurando, resultando em um atendimento mais personalizado.' },
+{ text: 'Mostrar imediatamente os produtos em promoção para despertar interesse.', correct: false, feedback: '**Incorreto.** Focar em promoções logo de cara pode passar a impressão de que você só quer vender, não ajudar. Clientes podem se sentir pressionados e formar uma impressão negativa da loja.' }
+]
+},
+{
+id: 3,
+img: 'https://images.pexels.com/photos/7679720/pexels-photo-7679720.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', // Descoberta de necessidades - nova imagem
+text: 'Descoberta de Necessidades: Após o cumprimento inicial, Júlia menciona que está procurando algo "especial" mas não especifica muito. Como você deve conduzir a conversa para entender melhor suas necessidades?',
+choices: [
+{ text: 'Perguntar diretamente: "O que exatamente você está procurando?"', correct: false, feedback: '**Incorreto.** Perguntas muito diretas podem fazer clientes indecisos se sentirem pressionados. É melhor fazer perguntas abertas que os ajudem a refletir sobre suas necessidades.' },
+{ text: 'Fazer perguntas abertas sobre a ocasião: "Para que tipo de evento ou situação você gostaria de algo especial?"', correct: true, feedback: '**Correto!** Perguntas sobre o contexto de uso são excelentes para descobrir necessidades. Saber a ocasião ajuda você a direcionar as sugestões adequadamente e faz a cliente pensar sobre suas real necessidades.' },
+{ text: 'Mostrar as peças mais populares da loja e ver qual desperta interesse.', correct: false, feedback: '**Incorreto.** Mostrar produtos aleatoriamente sem entender as necessidades pode resultar em sugestões inadequadas e perda de tempo para ambos.' },
+{ text: 'Perguntar sobre estilo pessoal: "Que tipo de roupa faz você se sentir confiante e bonita?"', correct: true, feedback: '**Correto!** Esta pergunta é excelente porque conecta aspectos emocionais com a compra. Entender como a cliente quer se sentir ajuda você a sugerir peças que realmente farão sentido para o estilo e personalidade dela.' }
+]
+},
+{
+id: 4,
+img: 'https://images.pexels.com/photos/7679674/pexels-photo-7679674.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', // Apresentação de produtos
+text: 'Apresentação de Produtos: Júlia revela que precisa de um vestido para um jantar romântico. Você tem várias opções. Como deve apresentar os produtos para maximizar as chances de venda?',
+choices: [
+{ text: 'Mostrar todas as opções disponíveis e deixar ela escolher.', correct: false, feedback: '**Incorreto.** Muitas opções podem gerar paralisia de decisão. É melhor fazer uma pré-seleção baseada no que você descobriu sobre as necessidades dela.' },
+{ text: 'Selecionar 2-3 peças que combinem com o que ela descreveu e explicar por que cada uma seria perfeita para a ocasião.', correct: true, feedback: '**Correto!** Esta é a abordagem ideal. Uma seleção curada mostra sua expertise e facilita a decisão. Explicar o "porquê" de cada sugestão ajuda a cliente a visualizar como a peça atenderá suas necessidades específicas.' },
+{ text: 'Mostrar primeiro a peça mais cara para estabelecer um ponto de referência alto.', correct: false, feedback: '**Incorreto.** Esta tática pode parecer manipulativa e afugentar clientes. É melhor focar no valor e adequação das peças às necessidades da cliente.' },
+{ text: 'Perguntar o orçamento dela antes de mostrar qualquer produto.', correct: false, feedback: '**Incorreto.** Perguntar sobre orçamento logo de cara pode criar constrangimento. É melhor apresentar opções de diferentes faixas de preço e deixar a cliente se posicionar naturalmente.' }
+]
+},
+{
+id: 5,
+img: 'https://images.pexels.com/photos/5632402/pexels-photo-5632402.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', // Customer making purchase decision
+text: 'Fechamento da Venda: Júlia gostou de dois vestidos e está indecisa entre eles. Ela está hesitante sobre o preço de um deles. Como você deve conduzir o fechamento da venda?',
+choices: [
+{ text: 'Oferecer desconto imediatamente para facilitar a decisão.', correct: false, feedback: '**Incorreto.** Oferecer desconto muito rapidamente pode desvalorizar o produto e fazer a cliente questionar se o preço original era justo. Além disso, você perde margem desnecessariamente.' },
+{ text: 'Ajudar ela a avaliar qual vestido combina melhor com o estilo dela e a ocasião, focando no valor e benefícios.', correct: true, feedback: '**Correto!** Focar no valor e adequação ao invés do preço é a melhor estratégia. Ajudar a cliente a tomar uma decisão baseada em benefícios e adequação resulta em maior satisfação pós-compra.' },
+{ text: 'Criar urgência mencionando que é a última peça do tamanho dela.', correct: false, feedback: '**Incorreto.** Táticas de pressão podem funcionar no curto prazo, mas prejudicam a experiência do cliente e a percepção da marca. Podem gerar arrependimento pós-compra.' },
+{ text: 'Sugerir que ela leve os dois vestidos, oferecendo um pacote promocional.', correct: true, feedback: '**Correto!** Esta é uma ótima estratégia de upsell quando bem aplicada. Se os dois vestidos realmente atendem necessidades diferentes dela, sugerir um combo com vantagem pode ser uma solução win-win.' }
+]
+}
+];
+
+// Dados das cenas para cliente
+const scenesCliente = [
+{
+id: 1,
+img: 'https://images.pexels.com/photos/7679720/pexels-photo-7679720.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', // Cliente pesquisando/navegando
+text: 'Descoberta: Você (Júlia) está navegando nas redes sociais e vê um anúncio de uma loja de roupas com vestidos lindos. O que te faria clicar e conhecer mais sobre a loja?',
+choices: [
+{ text: 'Ver que os vestidos têm preços promocionais muito baixos.', correct: false, feedback: '**Incorreto.** Preços muito baixos podem gerar desconfiança sobre a qualidade. Como cliente, você pode questionar se há algo errado com os produtos.' },
+{ text: 'Ver fotos de qualidade com modelos usando os vestidos em situações do seu dia a dia.', correct: true, feedback: '**Correto!** Como cliente, você quer se ver usando a roupa. Fotos que mostram as peças em contexto real ajudam você a visualizar como ficaria e se adequa ao seu estilo de vida.' },
+{ text: 'Ler depoimentos de outras clientes sobre a qualidade e atendimento.', correct: true, feedback: '**Correto!** Depoimentos reais geram credibilidade e confiança. Como cliente, você se sente mais segura sabendo que outras pessoas tiveram experiências positivas com a loja.' },
+{ text: 'Ver que a loja tem milhões de seguidores nas redes sociais.', correct: false, feedback: '**Incorreto.** Quantidade de seguidores não necessariamente indica qualidade. Como cliente, você valoriza mais a autenticidade e relevância do conteúdo do que números inflados.' }
+]
+},
+{
+id: 2,
+img: 'https://images.pexels.com/photos/7679674/pexels-photo-7679674.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', // Cliente entrando na loja
+text: 'Primeira Visita: Você decidiu visitar a loja física. Ao entrar, como você gostaria de ser recebida para se sentir confortável e bem-vinda?',
+choices: [
+{ text: 'Que alguém se aproxime imediatamente perguntando o que você está procurando.', correct: false, feedback: '**Incorreto.** Como cliente, especialmente se você é mais tímida, uma abordagem muito direta pode te fazer se sentir pressionada e desconfortável.' },
+{ text: 'Ser cumprimentada calorosamente e informada que há ajuda disponível quando precisar.', correct: true, feedback: '**Correto!** Esta abordagem te deixa confortável. Você se sente bem-vinda, mas não pressionada, tendo liberdade para explorar no seu ritmo e pedir ajuda quando se sentir pronta.' },
+{ text: 'Ser ignorada inicialmente para poder olhar tudo com calma.', correct: false, feedback: '**Incorreto.** Ser completamente ignorada pode te fazer sentir desvalorizada como cliente. Um cumprimento inicial demonstra que sua presença é importante para a loja.' },
+{ text: 'Receber imediatamente informações sobre promoções e ofertas especiais.', correct: false, feedback: '**Incorreto.** Como cliente, você quer primeiro entender o que a loja oferece e se conectar com os produtos antes de pensar em promoções.' }
+]
+},
+{
+id: 3,
+img: 'https://images.pexels.com/photos/7679845/pexels-photo-7679845.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', // Cliente sendo atendida - nova imagem
+text: 'Necessidades: Você menciona que está procurando algo "especial" mas não tem certeza do que exatamente. Como você gostaria que a vendedora te ajudasse a descobrir suas necessidades?',
+choices: [
+{ text: 'Que ela pergunte diretamente o que você quer comprar.', correct: false, feedback: '**Incorreto.** Como cliente indecisa, perguntas muito diretas podem te deixar desconfortável. Você prefere ser guiada através de um processo de descoberta.' },
+{ text: 'Que ela faça perguntas sobre a ocasião e como você quer se sentir.', correct: true, feedback: '**Correto!** Como cliente, você valoriza quando a vendedora te ajuda a refletir sobre suas necessidades reais. Perguntas sobre contexto e sentimentos te ajudam a clarear suas ideias.' },
+{ text: 'Que ela mostre as peças mais vendidas da loja.', correct: false, feedback: '**Incorreto.** Como cliente, você quer algo que faça sentido para você, não necessariamente o que outras pessoas compraram. Popularidade não garante adequação às suas necessidades.' },
+{ text: 'Que ela pergunte sobre seu estilo pessoal e preferências.', correct: true, feedback: '**Correto!** Como cliente, você aprecia quando a vendedora se interessa genuinamente pelo seu estilo. Isso mostra que ela quer te ajudar a encontrar algo que realmente combine com você.' }
+]
+},
+{
+id: 4,
+img: 'https://images.pexels.com/photos/7679618/pexels-photo-7679618.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', // Cliente experimentando
+text: 'Experimentação: Você revelou que precisa de um vestido para um jantar romântico. Como você gostaria que os produtos fossem apresentados?',
+choices: [
+{ text: 'Ver todas as opções disponíveis para poder escolher.', correct: false, feedback: '**Incorreto.** Como cliente, muitas opções podem te deixar sobrecarregada e confusa. Você prefere uma seleção curada que facilite sua decisão.' },
+{ text: 'Receber uma seleção personalizada com explicações sobre por que cada peça seria adequada.', correct: true, feedback: '**Correto!** Como cliente, você valoriza a expertise da vendedora. Uma seleção curada com explicações te ajuda a entender o valor de cada peça e como ela atenderia suas necessidades.' },
+{ text: 'Ver primeiro as peças mais caras para conhecer o que há de melhor.', correct: false, feedback: '**Incorreto.** Como cliente, você pode se sentir manipulada por essa tática. Prefere ver opções baseadas na adequação às suas necessidades, não no preço.' },
+{ text: 'Ser questionada sobre seu orçamento antes de ver qualquer produto.', correct: false, feedback: '**Incorreto.** Como cliente, perguntas sobre orçamento podem te deixar constrangida. Você prefere primeiro conhecer as opções e depois considerar o investimento.' }
+]
+},
+{
+id: 5,
+img: 'https://images.pexels.com/photos/5632402/pexels-photo-5632402.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', // Customer making purchase decision
+text: 'Decisão Final: Você gostou de dois vestidos mas está hesitante sobre o preço de um deles. O que te ajudaria a tomar a decisão final?',
+choices: [
+{ text: 'Receber um desconto imediato no vestido mais caro.', correct: false, feedback: '**Incorreto.** Como cliente, um desconto muito rápido pode te fazer questionar se o preço original era justo. Você prefere decisões baseadas em valor real.' },
+{ text: 'Ter ajuda para avaliar qual vestido combina melhor com você e suas necessidades.', correct: true, feedback: '**Correto!** Como cliente, você valoriza ajuda genuína na tomada de decisão. Focar nos benefícios e adequação te dá confiança de que está fazendo a escolha certa.' },
+{ text: 'Saber que é a última peça do seu tamanho.', correct: false, feedback: '**Incorreto.** Como cliente, táticas de pressão podem te fazer sentir manipulada e resultar em arrependimento posterior. Você prefere decisões sem pressão.' },
+{ text: 'Receber uma sugestão de levar ambos os vestidos com desconto no combo.', correct: true, feedback: '**Correto!** Como cliente, se ambos os vestidos realmente atendem suas necessidades, uma oferta de combo pode ser uma solução vantajosa. Você aprecia sugestões que agregam valor real.' }
+]
+}
+];
+
+// Funções de navegação
+function showRoleSelection() {
+roleSelection.style.display = 'block';
+characterSelection.style.display = 'none';
+gameLojista.style.display = 'none';
+gameCliente.style.display = 'none';
+}
+
+function showCharacterSelection() {
+roleSelection.style.display = 'none';
+characterSelection.style.display = 'block';
+characterSelection.classList.add('fade-in');
+}
+
+function startGame() {
+characterSelection.style.display = 'none';
+if (role === 'lojista') {
+gameLojista.style.display = 'block';
+gameLojista.classList.add('scene-transition');
+loadScene(scenesLojista, sceneImgLojista, textLojista, choicesLojista);
+} else {
+gameCliente.style.display = 'block';
+gameCliente.classList.add('scene-transition');
+loadScene(scenesCliente, sceneImgCliente, textCliente, choicesCliente);
+}
+startTime = Date.now();
+updateScoreboard();
+updateProgress();
+}
+
+function loadScene(scenes, imgElement, textElement, choicesElement) {
+if (currentSceneIndex >= scenes.length) {
+showFinalResults();
+return;
+}
+
+const scene = scenes[currentSceneIndex];
+imgElement.src = scene.img;
+imgElement.alt = `Cena ${scene.id}: ${scene.text.substring(0, 50)}...`;
+textElement.innerHTML = scene.text;
+
+choicesElement.innerHTML = '';
+scene.choices.forEach((choice, index) => {
+const button = document.createElement('button');
+button.classList.add('choice-btn');
+button.setAttribute('role', 'listitem');
+button.innerHTML = `${String.fromCharCode(65 + index)}. ${choice.text}`;
+button.addEventListener('click', () => handleChoice(choice, button, scenes, imgElement, textElement, choicesElement));
+choicesElement.appendChild(button);
+});
+
+totalQuestions++;
+updateProgress();
+}
+
+function handleChoice(choice, buttonElement, scenes, imgElement, textElement, choicesElement) {
+// Desabilitar todos os botões
+Array.from(choicesElement.children).forEach(btn => btn.disabled = true);
+
+// Feedback visual
+if (choice.correct) {
+buttonElement.classList.add('correct');
+score += 20;
+correctAnswers++;
+playSound(true);
+} else {
+buttonElement.classList.add('incorrect');
+playSound(false);
+}
+
+// Mostrar feedback
+setTimeout(() => {
+textElement.innerHTML = choice.feedback;
+
+// Botão para próxima cena
+const nextButton = document.createElement('button');
+nextButton.classList.add('choice-btn');
+nextButton.style.marginTop = '20px';
+nextButton.innerHTML = currentSceneIndex < scenes.length - 1 ? '➡️ Próxima Situação' : '🏆 Ver Resultados';
+nextButton.addEventListener('click', () => {
+currentSceneIndex++;
+loadScene(scenes, imgElement, textElement, choicesElement);
+});
+
+choicesElement.innerHTML = '';
+choicesElement.appendChild(nextButton);
+updateScoreboard();
+}, 1500);
+}
+
+function updateScoreboard() {
+const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+const timeElapsed = startTime ? Math.round((Date.now() - startTime) / 1000) : 0;
+const avgTimePerQuestion = totalQuestions > 0 ? Math.round(timeElapsed / totalQuestions) : 0;
+
+const scoreboardContent = `
+<div>Pontuação Total: ${score} pontos</div>
+<div class="score-details">
+<div class="score-item">
+<span class="label">Acertos</span>
+<span class="value">${correctAnswers}/${totalQuestions}</span>
+</div>
+<div class="score-item">
+<span class="label">Precisão</span>
+<span class="value">${accuracy}%</span>
+</div>
+<div class="score-item">
+<span class="label">Tempo Médio</span>
+<span class="value">${avgTimePerQuestion}s</span>
+</div>
+</div>
+`;
+
+if (role === 'lojista') {
+scoreboardLojista.innerHTML = scoreboardContent;
+} else {
+scoreboardCliente.innerHTML = scoreboardContent;
+}
+}
+
+function updateProgress() {
+const total = role === 'lojista' ? scenesLojista.length : scenesCliente.length;
+const progressText = `Situação ${currentSceneIndex + 1} de ${total}`;
+if (role === 'lojista') {
+progressLojista.textContent = progressText;
+} else {
+progressCliente.textContent = progressText;
+}
+}
+
+function showFinalResults() {
+const timeElapsed = Math.round((Date.now() - startTime) / 1000);
+const accuracy = Math.round((correctAnswers / totalQuestions) * 100);
+
+let performanceLevel = '';
+let message = '';
+
+if (accuracy >= 90) {
+performanceLevel = '🏆 Excelente!';
+message = 'Você demonstrou domínio excepcional das estratégias de vendas e experiência do cliente!';
+} else if (accuracy >= 70) {
+performanceLevel = '🥉 Muito Bom!';
+message = 'Você tem uma boa compreensão das melhores práticas. Continue aprimorando!';
+} else if (accuracy >= 50) {
+performanceLevel = '📚 Bom!';
+message = 'Você está no caminho certo. Revise alguns conceitos para melhorar ainda mais.';
+} else {
+performanceLevel = '💪 Continue Praticando!';
+message = 'Há espaço para crescimento. Estude mais sobre experiência do cliente e estratégias de venda.';
+}
+
+const finalText = `
+<div style="text-align: center; padding: 20px;">
+<h2>${performanceLevel}</h2>
+<p style="font-size: 1.2rem; margin: 20px 0;">${message}</p>
+<div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
+<h3>Seus Resultados:</h3>
+<p><strong>Pontuação Final:</strong> ${score} pontos</p>
+<p><strong>Acertos:</strong> ${correctAnswers} de ${totalQuestions} situações</p>
+<p><strong>Precisão:</strong> ${accuracy}%</p>
+<p><strong>Tempo Total:</strong> ${Math.floor(timeElapsed / 60)}:${(timeElapsed % 60).toString().padStart(2, '0')}</p>
+</div>
+<button class="choice-btn" onclick="restartGame()" style="margin-top: 20px;">
+🔄 Jogar Novamente
+</button>
+</div>
+`;
+
+if (role === 'lojista') {
+textLojista.innerHTML = finalText;
+choicesLojista.innerHTML = '';
+} else {
+textCliente.innerHTML = finalText;
+choicesCliente.innerHTML = '';
+}
+}
+
+function restartGame() {
+currentSceneIndex = 0;
+score = 0;
+correctAnswers = 0;
+totalQuestions = 0;
+startTime = null;
+showRoleSelection();
+}
+
+// Event Listeners
+roleLojistaBtn.addEventListener('click', () => {
+role = 'lojista';
+roleLojistaBtn.classList.add('selected');
+roleClienteBtn.classList.remove('selected');
+showCharacterSelection();
+});
+
+roleClienteBtn.addEventListener('click', () => {
+role = 'cliente'; 
+roleClienteBtn.classList.add('selected');
+roleLojistaBtn.classList.remove('selected');
+showCharacterSelection();
+});
+
+// Seleção de personagem
+characterOptions.forEach(option => {
+option.addEventListener('click', selectCharacter);
+option.addEventListener('keydown', (e) => {
+if (e.key === 'Enter' || e.key === ' ') {
+e.preventDefault();
+selectCharacter.call(option);
+}
+});
+});
+
+function selectCharacter() {
+selectedCharacter = this.dataset.character;
+characterOptions.forEach(opt => {
+opt.classList.remove('selected');
+opt.setAttribute('aria-checked', 'false');
+});
+this.classList.add('selected');
+this.setAttribute('aria-checked', 'true');
+this.classList.add('pulse-animation');
+
+setTimeout(() => {
+startGame();
+}, 600);
+}
+
+// Controle de som
+muteBtn.addEventListener('click', () => {
+isMuted = !isMuted;
+muteBtn.setAttribute('aria-pressed', isMuted.toString());
+muteBtn.innerHTML = isMuted ? '🔇 Som' : '🔊 Som';
+});
+
+// Acessibilidade - navegação por teclado
+document.addEventListener('keydown', (e) => {
+if (e.key === 'Escape') {
+showRoleSelection();
+}
+});
+
+// Inicialização
+showRoleSelection();
+</script>
+</body>
+</html>
